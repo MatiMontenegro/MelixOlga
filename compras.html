@@ -59,6 +59,7 @@
       .purchase-date {
         font-size: 0.9rem;
         color: #777;
+        font-weight: 500; /* Added for better visibility */
       }
       .buy-again {
         font-size: 0.9rem;
@@ -350,10 +351,9 @@
       const navProfilePic = document.getElementById("navProfilePic");
       const cartCount = document.getElementById("cartCount");
 
-      // Use the consistent key for purchases
+      // Use the consistent keys for localStorage
       let compras = JSON.parse(localStorage.getItem("olgaLibreCompras")) || [];
-      // Also load cart for header count, though not used for display here
-      let cart = JSON.parse(localStorage.getItem("olgaLibreCart")) || [];
+      let cart = JSON.parse(localStorage.getItem("olgaLibreCart")) || []; // Also load cart for header count
 
       // --- Funciones ---
 
@@ -366,10 +366,11 @@
           emptyPurchasesMessage.classList.add("hidden");
 
           compras.forEach((item, index) => {
+            // MODIFIED: Use item.deliveryDate for the top date and remove "Comprado el:"
             const purchaseCardHtml = `
                         <div class="purchase-card">
                             <div class="purchase-header">
-                                <span class="purchase-date">${item.purchaseDate}</span>
+                                <span class="purchase-date">${item.deliveryDate}</span>
                                 <a href="#" class="buy-again meli-link">Volver a comprar</a>
                             </div>
                             <div class="product-detail-section">
@@ -384,7 +385,7 @@
                                     }</p>
                                     <p class="product-quantity">${item.price.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })} - 1 producto</p>
                                     <button class="removeItemButton mt-2" data-index="${index}" data-type="purchase">
-                                        <i class="fas fa-trash-alt mr-1"></i> Remover de la lista
+                                        <i class="fas fa-trash-alt mr-1"></i> Eliminar compra
                                     </button>
                                 </div>
                             </div>
@@ -397,7 +398,6 @@
           document.querySelectorAll(".removeItemButton").forEach((button) => {
             button.addEventListener("click", function () {
               const itemIndex = parseInt(this.dataset.index);
-              // Use specific function for purchase removal
               removePurchaseItem(itemIndex);
             });
           });
@@ -457,7 +457,6 @@
 
       // --- Inicialización ---
       document.addEventListener("DOMContentLoaded", () => {
-        // Load data on page load
         cart = JSON.parse(localStorage.getItem("olgaLibreCart")) || []; // Load cart for header count
         compras = JSON.parse(localStorage.getItem("olgaLibreCompras")) || []; // Load purchases
         updateUsernameDisplayAndNavPic(); // Load and display profile info in header
