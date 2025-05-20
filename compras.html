@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mi Carrito - MercadoLibre</title>
+    <title>Mis Compras - MercadoLibre</title>
     <link
       rel="icon"
       href="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.23.1/mercadolibre/favicon.ico"
@@ -19,7 +19,6 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
     <style>
-      /* START of copied styles from index.html */
       body {
         font-family: "Inter", sans-serif;
         background-color: #f5f5f5; /* Tono de gris claro similar a MercadoLibre */
@@ -41,66 +40,78 @@
       .meli-link:hover {
         text-decoration: underline;
       }
-      /* END of copied styles from index.html */
-
-      /* Specific styles for cart page */
-      .product-item {
+      /* Estilos específicos para las cards de compras */
+      .purchase-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+        padding: 1.5rem;
+      }
+      .purchase-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 0.75rem;
+      }
+      .purchase-date {
+        font-size: 0.9rem;
+        color: #777;
+      }
+      .buy-again {
+        font-size: 0.9rem;
+        color: #3483fa; /* Azul de MercadoLibre */
+        font-weight: 500;
+        text-decoration: none;
+      }
+      .buy-again:hover {
+        text-decoration: underline;
+      }
+      .product-detail-section {
         display: flex;
         align-items: center;
-        padding: 1rem;
-        border-bottom: 1px solid #eee;
-        background-color: #fff; /* White background for each item */
+        margin-bottom: 1rem;
       }
-      .product-item:last-child {
-        border-bottom: none;
-      }
-      .product-item img {
-        width: 80px;
-        height: 80px;
+      .product-detail-section img {
+        width: 100px;
+        height: 100px;
         object-fit: contain;
-        border-radius: 0.25rem;
         margin-right: 1rem;
+        border-radius: 4px;
       }
-      .product-item-details {
+      .product-info {
         flex-grow: 1;
       }
-      .product-item-details h3 {
-        font-weight: 600;
-        color: #333;
-      }
-      .product-item-details p {
-        color: #555;
-        font-size: 0.9rem;
-      }
-      .product-price {
-        font-size: 1.25rem;
+      .product-title {
         font-weight: 700;
+        font-size: 1rem; /* Adjust as needed, e.g., 0.875rem for text-sm */
         color: #333;
-        margin-left: 1rem;
-        flex-shrink: 0; /* Prevent price from shrinking */
+        margin-bottom: 0.25rem;
       }
-      .empty-cart-message {
+      .delivery-status {
+        color: #00a650; /* Verde de MercadoLibre */
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+      }
+      .delivery-date {
+        color: #555;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+      }
+      .product-quantity {
+        color: #777;
+        font-size: 0.8rem;
+      }
+      .empty-purchases-message {
         text-align: center;
         padding: 2rem;
         color: #777;
-      }
-      .removeItemButton {
-        background-color: #dc3545; /* Red for delete */
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 0.25rem;
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-      }
-      .removeItemButton:hover {
-        background-color: #c82333;
-      }
-      .delivery-info {
-        font-size: 0.85rem;
-        color: #00a650; /* Green color for delivery info, common in ML */
-        font-weight: 500;
-        margin-top: 0.25rem;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
     </style>
   </head>
@@ -218,7 +229,6 @@
             </a>
             <a
               href="cart.html"
-              id="cartLink"
               class="relative meli-nav-text hover:text-gray-800"
             >
               <i class="fas fa-shopping-cart text-xl"></i>
@@ -252,27 +262,11 @@
       >
         <i class="fas fa-arrow-left mr-2"></i> Volver a la página principal
       </button>
-      <h1 class="text-3xl font-semibold text-gray-800 mb-6">Mi Carrito</h1>
-      <div id="cartItemsContainer" class="bg-white p-6 rounded-lg shadow">
-        <p id="emptyCartMessage" class="text-gray-500 empty-cart-message">
-          Tu carrito está vacío.
+      <h1 class="text-3xl font-semibold text-gray-800 mb-6">Mis Compras</h1>
+      <div id="purchasesContainer">
+        <p id="emptyPurchasesMessage" class="empty-purchases-message">
+          Aún no tienes compras realizadas.
         </p>
-      </div>
-      <div
-        id="cartTotalContainer"
-        class="bg-white p-6 rounded-lg shadow mt-4 flex justify-between items-center hidden"
-      >
-        <p class="text-xl font-semibold text-gray-800">Total:</p>
-        <p id="cartTotalPrice" class="text-2xl font-bold text-green-600">
-          $0.00
-        </p>
-      </div>
-      <div class="mt-6 flex justify-end">
-        <button
-          class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg text-lg"
-        >
-          Continuar compra (simulado)
-        </button>
       </div>
     </main>
 
@@ -345,105 +339,79 @@
 
     <script>
       // --- Variables Globales ---
-      const cartItemsContainer = document.getElementById("cartItemsContainer");
-      const emptyCartMessage = document.getElementById("emptyCartMessage");
-      const cartTotalContainer = document.getElementById("cartTotalContainer");
-      const cartTotalPrice = document.getElementById("cartTotalPrice");
+      const purchasesContainer = document.getElementById("purchasesContainer");
+      const emptyPurchasesMessage = document.getElementById(
+        "emptyPurchasesMessage"
+      );
       const backToHomeButton = document.getElementById("backToHomeButton");
 
-      // Shared elements from header/footer that are common between index.html and cart.html
+      // Shared elements from header/footer
       const usernameDisplay = document.getElementById("usernameDisplay");
       const navProfilePic = document.getElementById("navProfilePic");
       const cartCount = document.getElementById("cartCount");
 
-      // IMPORTANT: Use the same localStorage key as in index.html
+      // Use the consistent key for purchases
+      let compras = JSON.parse(localStorage.getItem("olgaLibreCompras")) || [];
+      // Also load cart for header count, though not used for display here
       let cart = JSON.parse(localStorage.getItem("olgaLibreCart")) || [];
 
       // --- Funciones ---
 
-      // NEW: Function to generate a random date within the current month, from tomorrow until month end
-      function getRandomArrivalDate() {
-        const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(today.getDate() + 1); // Start from tomorrow
+      function renderPurchases() {
+        purchasesContainer.innerHTML = ""; // Clear existing content
 
-        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Last day of current month
-
-        // Calculate the difference in days between tomorrow and end of month
-        const diffTime = Math.abs(endOfMonth - tomorrow);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        // Generate a random number of days to add to tomorrow
-        const randomDaysToAdd = Math.floor(Math.random() * (diffDays + 1)); // +1 to include end of month
-
-        const arrivalDate = new Date(tomorrow);
-        arrivalDate.setDate(tomorrow.getDate() + randomDaysToAdd);
-
-        const options = { weekday: 'long', day: 'numeric', month: 'long' };
-        return arrivalDate.toLocaleDateString("es-AR", options);
-      }
-
-      // Function to render / re-render all cart items and update total
-      function renderCartItems() {
-        cartItemsContainer.innerHTML = ""; // Clear existing content
-        let total = 0;
-
-        if (cart.length === 0) {
-          emptyCartMessage.classList.remove("hidden");
-          cartTotalContainer.classList.add("hidden");
+        if (compras.length === 0) {
+          emptyPurchasesMessage.classList.remove("hidden");
         } else {
-          emptyCartMessage.classList.add("hidden");
-          cartTotalContainer.classList.remove("hidden");
+          emptyPurchasesMessage.classList.add("hidden");
 
-          cart.forEach((item, index) => {
-            // Ensure item has an arrivalDate, if not, generate one (for existing items in storage)
-            if (!item.arrivalDate) {
-              item.arrivalDate = getRandomArrivalDate();
-              // Optionally, save back to localStorage immediately if you want this to persist
-              // localStorage.setItem("olgaLibreCart", JSON.stringify(cart));
-            }
-
-            const itemElement = document.createElement("div");
-            itemElement.classList.add(
-              "product-item",
-              "mb-4",
-              "rounded-lg",
-              "shadow-sm"
-            );
-            itemElement.innerHTML = `
-                        <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://placehold.co/80x80/EFEFEF/AAAAAA?text=Img'" />
-                        <div class="product-item-details">
-                            <h3>${item.title}</h3>
-                            <p class="delivery-info">Llega el: ${item.arrivalDate}</p>
-                            <button class="removeItemButton mt-2" data-index="${index}">
-                                <i class="fas fa-trash-alt mr-1"></i> Eliminar
-                            </button>
+          compras.forEach((item, index) => {
+            const purchaseCardHtml = `
+                        <div class="purchase-card">
+                            <div class="purchase-header">
+                                <span class="purchase-date">${item.purchaseDate}</span>
+                                <a href="#" class="buy-again meli-link">Volver a comprar</a>
+                            </div>
+                            <div class="product-detail-section">
+                                <img src="${item.imageUrl}" alt="${
+              item.title
+            }" onerror="this.src='https://placehold.co/100x100/EFEFEF/AAAAAA?text=Img'" />
+                                <div class="product-info">
+                                    <h3 class="product-title">${item.title}</h3>
+                                    <p class="delivery-status">Entregado <i class="fas fa-check-circle"></i></p>
+                                    <p class="delivery-date">Llegó el ${
+                                      item.deliveryDate
+                                    }</p>
+                                    <p class="product-quantity">${item.price.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })} - 1 producto</p>
+                                    <button class="removeItemButton mt-2" data-index="${index}" data-type="purchase">
+                                        <i class="fas fa-trash-alt mr-1"></i> Remover de la lista
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <span class="product-price">$${item.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     `;
-            cartItemsContainer.appendChild(itemElement);
-            total += item.price;
+            purchasesContainer.innerHTML += purchaseCardHtml;
           });
 
-          // Add event listeners to individual item removal buttons
+          // Add event listeners to individual item removal buttons for purchases
           document.querySelectorAll(".removeItemButton").forEach((button) => {
             button.addEventListener("click", function () {
               const itemIndex = parseInt(this.dataset.index);
-              removeItemFromCart(itemIndex);
+              // Use specific function for purchase removal
+              removePurchaseItem(itemIndex);
             });
           });
         }
-
-        cartTotalPrice.textContent = `$${total.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        updateCartCount(); // Update cart count in header
       }
 
-      // Función para eliminar un item individual del carrito
-      function removeItemFromCart(index) {
-        cart.splice(index, 1);
-        // IMPORTANT: Use the same localStorage key as in index.html
-        localStorage.setItem("olgaLibreCart", JSON.stringify(cart)); // Update localStorage
-        updateCartCount(); // Update header cart count
-        renderCartItems(); // Re-render the cart items to reflect changes and re-calculate total
+      // Function to remove a single purchase item
+      function removePurchaseItem(index) {
+        if (confirm("¿Estás seguro de que quieres eliminar esta compra?")) {
+          compras.splice(index, 1);
+          localStorage.setItem("olgaLibreCompras", JSON.stringify(compras));
+          renderPurchases(); // Re-render purchases
+        }
       }
 
       // Function to update the cart count in the header
@@ -456,7 +424,7 @@
         }
       }
 
-      // Function to update username and profile pic in header (copied from index.html for consistency)
+      // Function to update username and profile pic in header (copied for consistency)
       function updateUsernameDisplayAndNavPic() {
         const username = localStorage.getItem("MercadoLibreUsername") || "";
         const profilePicUrl =
@@ -489,11 +457,12 @@
 
       // --- Inicialización ---
       document.addEventListener("DOMContentLoaded", () => {
-        // IMPORTANT: Load cart using the same localStorage key as in index.html
-        cart = JSON.parse(localStorage.getItem("olgaLibreCart")) || []; // Load cart
+        // Load data on page load
+        cart = JSON.parse(localStorage.getItem("olgaLibreCart")) || []; // Load cart for header count
+        compras = JSON.parse(localStorage.getItem("olgaLibreCompras")) || []; // Load purchases
         updateUsernameDisplayAndNavPic(); // Load and display profile info in header
         updateCartCount(); // Update cart count in header
-        renderCartItems(); // Display cart items on page load
+        renderPurchases(); // Display purchase items on page load
       });
     </script>
   </body>
