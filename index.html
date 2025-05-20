@@ -333,25 +333,31 @@
       </div>
     </header>
 
-    <main class="container mx-auto p-0">
-      <section class="mb-10 carousel-container">
+    <main class="container mx-auto p-4">
+      <section class="mb-6 carousel-container">
         <div class="carousel-wrapper" id="carouselWrapper">
           <div class="carousel-item">
             <img
-              src="./public/D_NQ_795769-MLA84506264742_052025-OO.webp"
+              src="https://http2.mlstatic.com/D_NQ_795769-MLA84506264742_052025-OO.webp"
               alt="Banner Principal 1"
             />
           </div>
           <div class="carousel-item">
             <img
-              src="./public/D_NQ_872866-MLA84921881567_052025-OO.webp"
+              src="https://http2.mlstatic.com/D_NQ_872866-MLA84921881567_052025-OO.webp"
               alt="Banner Principal 2"
             />
           </div>
           <div class="carousel-item">
             <img
-              src="./public/D_NQ_944395-MLA83017655050_032025-OO.webp"
+              src="https://http2.mlstatic.com/D_NQ_938150-MLA76343009187_052024-OO.webp"
               alt="Banner Principal 3"
+            />
+          </div>
+           <div class="carousel-item">
+            <img
+              src="https://http2.mlstatic.com/D_NQ_800039-MLA76343009089_052024-OO.webp"
+              alt="Banner Principal 4"
             />
           </div>
         </div>
@@ -685,6 +691,20 @@
           placeholder="https://ejemplo.com/producto.jpg"
         />
 
+        <label
+          for="productPriceInput"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Precio del Producto ($):</label
+        >
+        <input
+          type="number"
+          id="productPriceInput"
+          class="modal-input"
+          placeholder="Ej: 1500.50"
+          step="0.01"
+          min="0"
+        />
+
         <div class="mt-6 flex justify-end">
           <button id="addToCartButton" class="modal-button">
             Agregar al Carrito
@@ -733,6 +753,8 @@
       const productImageUrlInput = document.getElementById(
         "productImageUrlInput"
       );
+      const productPriceInput = document.getElementById("productPriceInput"); // NEW: Price input
+
       const addToCartButton = document.getElementById("addToCartButton");
       const clearCartButton = document.getElementById("clearCartButton");
 
@@ -746,7 +768,7 @@
       let currentIndex = 0;
       let carouselItems = []; // Will be populated on DOMContentLoaded
 
-      let cart = JSON.parse(localStorage.getItem("MercadoLibreCart")) || [];
+      let cart = JSON.parse(localStorage.getItem("olgaLibreCart")) || []; // Ensure consistent key "olgaLibreCart"
 
       // --- Funciones ---
 
@@ -813,9 +835,16 @@
       function addToCart() {
         const title = productTitleInput.value.trim();
         const imageUrl = productImageUrlInput.value.trim();
+        const priceInput = productPriceInput.value.trim(); // NEW: Get price input value
+
+        // NEW: Price validation
+        const price = parseFloat(priceInput);
+        if (isNaN(price) || price <= 0) {
+            alert("Por favor, ingresa un precio válido y positivo para el producto.");
+            return; // Stop the function if price is invalid
+        }
 
         if (title && imageUrl) {
-          const price = (Math.random() * 10000 + 500).toFixed(2); // Precio aleatorio
           const daysAgo = Math.floor(Math.random() * 2) + 1; // 1 or 2
           const purchaseDate = new Date();
           purchaseDate.setDate(purchaseDate.getDate() - daysAgo);
@@ -828,13 +857,14 @@
           cart.push({
             title,
             imageUrl,
-            price: parseFloat(price),
+            price: price, // Use the user-provided price
             purchaseDate: formattedDate,
           });
-          localStorage.setItem("MercadoLibreCart", JSON.stringify(cart)); // Save to localStorage
+          localStorage.setItem("olgaLibreCart", JSON.stringify(cart)); // Save to localStorage
           updateCartCount();
           productTitleInput.value = ""; // Limpiar campos
           productImageUrlInput.value = "";
+          productPriceInput.value = ""; // NEW: Clear price input
           alert("Producto agregado al carrito!");
           closeModal(); // Close modal after adding
         } else {
@@ -852,7 +882,7 @@
           )
         ) {
           cart = [];
-          localStorage.removeItem("MercadoLibreCart");
+          localStorage.removeItem("olgaLibreCart");
           updateCartCount();
           alert("Carrito vaciado.");
           closeModal(); // Close modal after clearing

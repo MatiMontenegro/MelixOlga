@@ -31,10 +31,6 @@
         font-size: 0.8rem;
         color: #333;
       }
-      .meli-search-button {
-        background-color: #3483fa; /* Azul de MercadoLibre */
-        color: white;
-      }
       .meli-search-input::placeholder {
         color: #999;
       }
@@ -45,115 +41,74 @@
       .meli-link:hover {
         text-decoration: underline;
       }
-      .category-item {
-        transition: transform 0.2s ease-in-out;
-      }
-      .category-item:hover {
-        transform: translateY(-3px);
-      }
-      .product-card {
-        transition: box-shadow 0.2s ease-in-out;
-      }
-      .product-card:hover {
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      }
+      /* END of copied styles from index.html */
 
-      /* Estilos para el panel modal */
-      .modal {
-        display: none; /* Oculto por defecto */
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro semitransparente */
+      /* Specific styles for cart page */
+      .product-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        background-color: #fff; /* White background for each item */
       }
-      .modal-content {
-        background-color: #fff;
-        margin: 10% auto;
-        padding: 25px;
-        border: 1px solid #ddd;
-        width: 80%;
-        max-width: 500px;
-        border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        position: relative; /* Para el botón de cerrar */
+      .product-item:last-child {
+        border-bottom: none;
       }
-      .close-button {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        position: absolute;
-        top: 10px;
-        right: 20px;
+      .product-item img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border-radius: 0.25rem;
+        margin-right: 1rem;
       }
-      .close-button:hover,
-      .close-button:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
+      .product-item-details {
+        flex-grow: 1;
       }
-      .modal-input {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
+      .product-item-details h3 {
+        font-weight: 600;
+        color: #333;
       }
-      .modal-button {
-        background-color: #3483fa;
+      .product-item-details p {
+        color: #555;
+        font-size: 0.9rem;
+      }
+      .product-price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #333;
+        margin-left: 1rem;
+        flex-shrink: 0; /* Prevent price from shrinking */
+      }
+      .empty-cart-message {
+        text-align: center;
+        padding: 2rem;
+        color: #777;
+      }
+      .removeItemButton {
+        background-color: #dc3545; /* Red for delete */
         color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        font-size: 0.8rem;
         cursor: pointer;
-        font-size: 1rem;
-        margin-right: 10px;
+        transition: background-color 0.2s ease;
       }
-      .modal-button:hover {
-        background-color: #2968c8;
-      }
-      .modal-button.delete {
-        background-color: #dc3545;
-      }
-      .modal-button.delete:hover {
+      .removeItemButton:hover {
         background-color: #c82333;
       }
-      .profile-pic-preview {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-left: 10px;
-        border: 2px solid #eee;
-      }
-      .nav-profile-pic {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-right: 8px;
-      }
-      /* END of copied styles from index.html */
     </style>
   </head>
-  <body class="bg-gray-100 flex flex-col min-h-screen">
+  <body class="bg-gray-100">
     <header class="meli-yellow p-2 shadow-md">
       <div class="container mx-auto">
         <div class="flex items-center justify-between mb-2">
-          <div class="flex items-center">
-            <a href="index.html">
-              <img
-                src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.23.1/mercadolibre/logo__large_plus.png"
-                alt="Logo Mercado Libre"
-                class="h-8 md:h-10"
-              />
-            </a>
-          </div>
+          <a href="index.html" class="flex items-between">
+            <img
+              src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.22.8/mercadolibre/logo__large_plus.png"
+              alt="Logo Mercado Libre"
+              class="h-8 md:h-10"
+            />
+          </a>
 
           <div class="relative flex-grow max-w-xl mx-4 pl-20 hidden md:block">
             <input
@@ -175,7 +130,9 @@
         </div>
 
         <div class="flex items-start justify-between">
-          <div class="flex flex-col items-start min-w-[120px] md:min-w-[150px]">
+          <div
+            class="flex flex-col items-start min-w-[120px] md:min-w-[150px]"
+          >
             <div class="hidden lg:flex items-center space-x-2 mb-2">
               <i class="fas fa-map-marker-alt text-gray-600"></i>
               <div>
@@ -244,19 +201,15 @@
                 id="navProfilePic"
                 src="https://placehold.co/30x30/EFEFEF/AAAAAA?text=?"
                 alt="Foto de perfil"
-                class="nav-profile-pic hidden"
+                class="w-8 h-8 rounded-full object-cover mr-2 hidden"
               />
               <span id="usernameDisplay">Ingresa</span>
             </a>
-            <a
-              href="cart.html"
-              id="cartLink"
-              class="relative meli-nav-text hover:text-gray-800"
-            >
+            <a href="#" class="relative meli-nav-text hover:text-gray-800">
               <i class="fas fa-shopping-cart text-xl"></i>
               <span
                 id="cartCount"
-                class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
+                class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center hidden"
                 >0</span
               >
             </a>
@@ -276,7 +229,8 @@
         </div>
       </div>
     </header>
-    <main class="flex-grow container mx-auto p-4">
+
+    <main class="container mx-auto p-4">
       <button
         id="backToHomeButton"
         class="mb-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg inline-flex items-center"
@@ -285,8 +239,17 @@
       </button>
       <h1 class="text-3xl font-semibold text-gray-800 mb-6">Mi Carrito</h1>
       <div id="cartItemsContainer" class="bg-white p-6 rounded-lg shadow">
-        <p id="emptyCartMessage" class="text-gray-500 text-center py-8">
+        <p id="emptyCartMessage" class="text-gray-500 empty-cart-message">
           Tu carrito está vacío.
+        </p>
+      </div>
+      <div
+        id="cartTotalContainer"
+        class="bg-white p-6 rounded-lg shadow mt-4 flex justify-between items-center hidden"
+      >
+        <p class="text-xl font-semibold text-gray-800">Total:</p>
+        <p id="cartTotalPrice" class="text-2xl font-bold text-green-600">
+          $0.00
         </p>
       </div>
       <div class="mt-6 flex justify-end">
@@ -356,7 +319,9 @@
             </div>
           </div>
         </div>
-        <p class="text-xs text-gray-400">&copy; 1999-2025 MercadoLibre S.R.L.</p>
+        <p class="text-xs text-gray-400">
+          &copy; 1999-2025 MercadoLibre S.R.L.
+        </p>
         <p class="text-xs text-gray-400">
           Av. Caseros 3039, Piso 2, CP 1264, Parque Patricios, CABA
         </p>
@@ -365,45 +330,79 @@
 
     <script>
       // --- Variables Globales ---
+      const cartItemsContainer = document.getElementById("cartItemsContainer");
+      const emptyCartMessage = document.getElementById("emptyCartMessage");
+      const cartTotalContainer = document.getElementById("cartTotalContainer");
+      const cartTotalPrice = document.getElementById("cartTotalPrice");
+      const backToHomeButton = document.getElementById("backToHomeButton");
+
+      // Shared elements from header/footer that are common between index.html and cart.html
       const usernameDisplay = document.getElementById("usernameDisplay");
       const navProfilePic = document.getElementById("navProfilePic");
       const cartCount = document.getElementById("cartCount");
-      const cartItemsContainer = document.getElementById("cartItemsContainer");
-      const emptyCartMessage = document.getElementById("emptyCartMessage");
-      const backToHomeButton = document.getElementById("backToHomeButton");
 
-      let cart = [];
+      // IMPORTANT: Use the same localStorage key as in index.html
+      let cart = JSON.parse(localStorage.getItem("olgaLibreCart")) || [];
 
       // --- Funciones ---
 
-      // Función para actualizar el nombre de usuario y la foto en la barra de navegación (copia de index.html)
-      function updateUsernameDisplayAndNavPic() {
-        const storedUsername = localStorage.getItem("MercadoLibreUsername");
-        const storedProfilePic = localStorage.getItem("MercadoLibreProfilePic");
+      // Function to render / re-render all cart items and update total
+      function renderCartItems() {
+        cartItemsContainer.innerHTML = ""; // Clear existing content
+        let total = 0;
 
-        if (storedUsername) {
-          usernameDisplay.textContent = storedUsername;
+        if (cart.length === 0) {
+          emptyCartMessage.classList.remove("hidden");
+          cartTotalContainer.classList.add("hidden");
         } else {
-          usernameDisplay.textContent = "Ingresa";
+          emptyCartMessage.classList.add("hidden");
+          cartTotalContainer.classList.remove("hidden");
+
+          cart.forEach((item, index) => {
+            const itemElement = document.createElement("div");
+            itemElement.classList.add(
+              "product-item",
+              "mb-4",
+              "rounded-lg",
+              "shadow-sm"
+            ); // Added some Tailwind for spacing/shadow
+            itemElement.innerHTML = `
+                        <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://placehold.co/80x80/EFEFEF/AAAAAA?text=Img'" />
+                        <div class="product-item-details">
+                            <h3>${item.title}</h3>
+                            <p>Fecha de compra: ${item.purchaseDate}</p>
+                            <button class="removeItemButton mt-2" data-index="${index}">
+                                <i class="fas fa-trash-alt mr-1"></i> Eliminar
+                            </button>
+                        </div>
+                        <span class="product-price">$${item.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    `;
+            cartItemsContainer.appendChild(itemElement);
+            total += item.price;
+          });
+
+          // Add event listeners to individual item removal buttons
+          document.querySelectorAll(".removeItemButton").forEach((button) => {
+            button.addEventListener("click", function () {
+              const itemIndex = parseInt(this.dataset.index);
+              removeItemFromCart(itemIndex);
+            });
+          });
         }
 
-        if (storedProfilePic) {
-          navProfilePic.src = storedProfilePic;
-          navProfilePic.classList.remove("hidden");
-        } else {
-          navProfilePic.src =
-            "https://placehold.co/30x30/EFEFEF/AAAAAA?text=?";
-          navProfilePic.classList.add("hidden");
-        }
+        cartTotalPrice.textContent = `$${total.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       }
 
-      // Error handling for profile pic loading
-      navProfilePic.onerror = function () {
-        this.src = "https://placehold.co/30x30/EFEFEF/AAAAAA?text=X";
-        this.classList.remove("hidden");
-      };
+      // Función para eliminar un item individual del carrito
+      function removeItemFromCart(index) {
+        cart.splice(index, 1);
+        // IMPORTANT: Use the same localStorage key as in index.html
+        localStorage.setItem("olgaLibreCart", JSON.stringify(cart)); // Update localStorage
+        updateCartCount(); // Update header cart count
+        renderCartItems(); // Re-render the cart items to reflect changes and re-calculate total
+      }
 
-      // Función para actualizar el contador del carrito
+      // Function to update the cart count in the header
       function updateCartCount() {
         cartCount.textContent = cart.length;
         if (cart.length > 0) {
@@ -413,75 +412,41 @@
         }
       }
 
-      // Función para renderizar los items en la página del carrito
-      function renderCartItems() {
-        cartItemsContainer.innerHTML = ""; // Limpiar contenedor
+      // Function to update username and profile pic in header (copied from index.html for consistency)
+      function updateUsernameDisplayAndNavPic() {
+        const username = localStorage.getItem("MercadoLibreUsername") || "";
+        const profilePicUrl =
+          localStorage.getItem("MercadoLibreProfilePic") || "";
 
-        if (cart.length === 0) {
-          cartItemsContainer.appendChild(emptyCartMessage);
-          emptyCartMessage.style.display = "block";
+        if (username) {
+          usernameDisplay.textContent = username;
         } else {
-          emptyCartMessage.style.display = "none";
-          cart.forEach((item, index) => {
-            const itemElement = document.createElement("div");
-            itemElement.classList.add(
-              "flex",
-              "items-center",
-              "justify-between",
-              "py-4",
-              "border-b",
-              "border-gray-200"
-            );
-            itemElement.innerHTML = `
-                        <div class="flex items-center space-x-4 flex-grow">
-                            <img src="${item.imageUrl}" alt="[Imagen de ${
-              item.title
-            }]" class="w-24 h-24 object-contain rounded border border-gray-300" onerror="this.src='https://placehold.co/96x96/EFEFEF/AAAAAA?text=Img'">
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-800">${
-                                  item.title
-                                }</h4>
-                                <p class="text-md text-gray-600">$${item.price.toFixed(
-                                  2
-                                )}</p>
-                                <p class="text-sm text-gray-500 mt-1">Comprado el: <span class="font-semibold">${
-                                  item.purchaseDate
-                                }</span></p>
-                            </div>
-                        </div>
-                        <button class="text-red-500 hover:text-red-700 removeItemButton" data-index="${index}">
-                            <i class="fas fa-trash-alt mr-1"></i> Eliminar
-                        </button>
-                    `;
-            cartItemsContainer.appendChild(itemElement);
-          });
+          usernameDisplay.textContent = "Ingresa";
+        }
 
-          // Añadir event listeners a los botones de eliminar item individual
-          document.querySelectorAll(".removeItemButton").forEach((button) => {
-            button.addEventListener("click", function () {
-              const itemIndex = parseInt(this.dataset.index);
-              removeItemFromCart(itemIndex);
-            });
-          });
+        if (profilePicUrl) {
+          navProfilePic.src = profilePicUrl;
+          navProfilePic.classList.remove("hidden");
+        } else {
+          navProfilePic.src = "https://placehold.co/30x30/EFEFEF/AAAAAA?text=?";
+          navProfilePic.classList.add("hidden");
         }
       }
 
-      // Función para eliminar un item individual del carrito
-      function removeItemFromCart(index) {
-        cart.splice(index, 1);
-        localStorage.setItem("MercadoLibreCart", JSON.stringify(cart)); // Update localStorage
-        updateCartCount();
-        renderCartItems(); // Re-render the cart items
-      }
+      navProfilePic.onerror = function () {
+        this.src = "https://placehold.co/30x30/EFEFEF/AAAAAA?text=X";
+        this.classList.remove("hidden");
+      };
 
       // --- Event Listeners ---
       backToHomeButton.addEventListener("click", () => {
-        window.location.href = "index.html";
+        window.location.href = "index.html"; // Navigate back to index.html
       });
 
       // --- Inicialización ---
       document.addEventListener("DOMContentLoaded", () => {
-        cart = JSON.parse(localStorage.getItem("MercadoLibreCart")) || []; // Load cart
+        // IMPORTANT: Load cart using the same localStorage key as in index.html
+        cart = JSON.parse(localStorage.getItem("olgaLibreCart")) || []; // Load cart
         updateUsernameDisplayAndNavPic(); // Load and display profile info in header
         updateCartCount(); // Update cart count in header
         renderCartItems(); // Display cart items on page load
