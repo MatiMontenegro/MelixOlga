@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mercado Libre Argentina - Donde comprar y vender de todo</title>
+    <link
+      rel="icon"
+      href="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.23.1/mercadolibre/favicon.ico"
+      type="image/x-icon"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f5f5f5; /* Tono de gris claro similar a MercadoLibre */
+      }
+      .meli-yellow {
+        background-color: #ffdd00; /* Amarillo característico de MercadoLibre */
+      }
+      .meli-nav-text {
+        font-size: 0.8rem;
+        color: #333;
+      }
+      .meli-search-button {
+        background-color: #3483fa; /* Azul de MercadoLibre */
+        color: white;
+      }
+      /* MODIFIED: Search input placeholder color */
+      .meli-search-input::placeholder {
+        color: #999;
+      }
+      .meli-link {
+        color: #3483fa;
+        text-decoration: none;
+      }
+      .meli-link:hover {
+        text-decoration: underline;
+      }
+      .category-item {
+        transition: transform 0.2s ease-in-out;
+      }
+      .category-item:hover {
+        transform: translateY(-3px);
+      }
+      .product-card {
+        transition: box-shadow 0.2s ease-in-out;
+      }
+      .product-card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Estilos para el panel modal */
+      .modal {
+        display: none; /* Oculto por defecto */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(
+          0,
+          0,
+          0,
+          0.6
+        ); /* Fondo oscuro semitransparente */
+      }
+      .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 25px;
+        border: 1px solid #ddd;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        position: relative; /* Para el botón de cerrar */
+      }
+      .close-button {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+      }
+      .close-button:hover,
+      .close-button:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .modal-input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .modal-button {
+        background-color: #34fa55;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-right: 10px;
+      }
+      .modal-button:hover {
+        background-color: #16d808;
+      }
+      .modal-button.delete {
+        background-color: #dc3545;
+      }
+      .modal-button.delete:hover {
+        background-color: #c82333;
+      }
+      .profile-pic-preview {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-left: 10px;
+        border: 2px solid #eee;
+      }
+      /* MODIFIED: nav-profile-pic margin for alignment */
+      .nav-profile-pic {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 8px; /* Changed from margin-left to margin-right */
+      }
+
+      /* Carousel specific styles */
+      .carousel-container {
+        position: relative;
+        overflow: hidden; /* Hide anything outside the container */
+      }
+
+      .carousel-wrapper {
+        display: flex;
+        transition: transform 0.5s ease-in-out; /* Smooth transition for slides */
+      }
+
+      .carousel-item {
+        min-width: 100%; /* Each item takes full width of the container */
+        box-sizing: border-box;
+        display: flex; /* Ensures image fills the item */
+        justify-content: center;
+        align-items: center;
+      }
+
+      .carousel-item img {
+        width: 100%;
+        height: auto;
+        border-radius: 0.5rem; /* rounded-lg */
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+          0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow */
+      }
+
+      .carousel-button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 0.5rem 0.75rem;
+        border-radius: 9999px; /* full rounded */
+        cursor: pointer;
+        z-index: 10;
+        opacity: 0.7;
+        transition: opacity 0.2s ease-in-out;
+      }
+
+      .carousel-button:hover {
+        opacity: 1;
+      }
+
+      .carousel-button.left {
+        left: 1rem;
+      }
+
+      .carousel-button.right {
+        right: 1rem;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <header class="meli-yellow p-2 shadow-md">
+      <div class="container mx-auto">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-between">
+            <img
+              src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.22.8/mercadolibre/logo__large_plus.png"
+              alt="Logo Mercado Libre"
+              class="h-8 md:h-10"
+            />
+          </div>
+
+          <div class="relative flex-grow max-w-xl mx-4 pl-20 hidden md:block">
+            <input
+              type="text"
+              id="searchBar"
+              placeholder="Buscar productos, marcas y más..."
+              class="w-full p-2 rounded-md border border-gray-300 meli-search-input text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <i
+              class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            ></i>
+          </div>
+
+          <img
+            src="https://http2.mlstatic.com/D_NQ_779354-MLA82788204133_022025-OO.webp"
+            alt="Disney+ Anuncio"
+            class="h-10 hidden md:block rounded-md"
+          />
+        </div>
+
+        <div class="flex items-start justify-between">
+          <div class="flex flex-col items-start min-w-[120px] md:min-w-[150px]">
+            <div class="hidden lg:flex items-center space-x-2 mb-2">
+              <i class="fas fa-map-marker-alt text-gray-600"></i>
+              <div>
+                <p class="text-xs text-gray-500">Enviar a</p>
+                <p class="text-sm font-semibold text-gray-700">
+                  153 W 57th St, New York
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <nav
+            class="flex-grow flex justify-center space-x-3 md:space-x-5 p-4 px-4"
+          >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Categorías</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Ofertas</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Cupones</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Supermercado</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Moda</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Mercado Play</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Vender</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Ayuda</a
+            >
+          </nav>
+
+          <div
+            class="flex items-center space-x-3 justify-end min-w-[150px] md:min-w-[200px]"
+          >
+            <a
+              href="#"
+              id="ingresaLink"
+              class="meli-nav-text font-semibold hover:text-gray-800 flex items-center"
+            >
+              <img
+                id="navProfilePic"
+                src="https://placehold.co/30x30/EFEFEF/AAAAAA?text=?"
+                alt="Foto de perfil"
+                class="nav-profile-pic hidden"
+              />
+              <span id="usernameDisplay">Ingresa</span>
+            </a>
+            <a
+              href="cart.html"
+              id="cartLink"
+              class="relative meli-nav-text hover:text-gray-800"
+            >
+              <i class="fas fa-shopping-cart text-xl"></i>
+              <span
+                id="cartCount"
+                class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
+                >0</span
+              >
+            </a>
+          </div>
+        </div>
+        <div class="container mx-auto mt-2 md:hidden">
+          <div class="relative flex-grow">
+            <input
+              type="text"
+              placeholder="Buscar productos, marcas y más..."
+              class="w-full p-2 pr-10 rounded-sm border border-gray-300 meli-search-input text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <i
+              class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            ></i>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container mx-auto p-0">
+      <section class="mb-10 carousel-container">
+        <div class="carousel-wrapper" id="carouselWrapper">
+          <div class="carousel-item">
+            <img
+              src="./public/D_NQ_795769-MLA84506264742_052025-OO.webp"
+              alt="Banner Principal 1"
+            />
+          </div>
+          <div class="carousel-item">
+            <img
+              src="./public/D_NQ_872866-MLA84921881567_052025-OO.webp"
+              alt="Banner Principal 2"
+            />
+          </div>
+          <div class="carousel-item">
+            <img
+              src="./public/D_NQ_944395-MLA83017655050_032025-OO.webp"
+              alt="Banner Principal 3"
+            />
+          </div>
+        </div>
+        <button id="prevButton" class="carousel-button left">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button id="nextButton" class="carousel-button right">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </section>
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Ofertas</h2>
+        <div
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+        >
+          <div class="bg-white p-4 rounded-lg shadow product-card">
+            <img
+              src="https://www.buheronegro.com.ar/wp-content/uploads/2024/02/imagen_1_banner.png"
+              alt="[Imagen de Producto en oferta]"
+              class="w-full h-40 object-contain mb-2 rounded"
+              onerror="this.src='https://placehold.co/200x160/EFEFEF/AAAAAA?text=Producto'"
+            />
+            <h3 class="text-md font-semibold text-gray-800">
+              Fernet Buhero Negro
+            </h3>
+            <p class="text-xl font-bold text-green-600">$5.950</p>
+            <p class="text-xs text-gray-500 line-through">$7.000</p>
+            <p class="text-xs text-green-500">15% OFF</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow product-card">
+            <img
+              src="https://acdn-us.mitiendanube.com/stores/001/184/069/products/el_eternauta-229789257c3e6aa50e17151826859606-1024-1024.jpg"
+              alt="[Imagen de Celular en oferta]"
+              class="w-full h-40 object-contain mb-2 rounded"
+              onerror="this.src='https://placehold.co/200x160/EFEFEF/AAAAAA?text=Producto+2'"
+            />
+            <h3 class="text-md font-semibold text-gray-800">
+              El Esternauta - Comic tapa dura
+            </h3>
+            <p class="text-xl font-bold text-green-600">$35.725</p>
+            <p class="text-xs text-green-500">Envío gratis</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow product-card">
+            <img
+              src="https://http2.mlstatic.com/D_NQ_NP_647610-MLA80817471523_112024-O.webp"
+              alt="[Imagen de Notebook en oferta]"
+              class="w-full h-40 object-contain mb-2 rounded"
+              onerror="this.src='https://placehold.co/200x160/EFEFEF/AAAAAA?text=Producto+3'"
+            />
+            <h3 class="text-md font-semibold text-gray-800">
+              Pack x 12 Detergente Cif
+            </h3>
+            <p class="text-xl font-bold text-green-600">$27.500</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow product-card">
+            <img
+              src="https://http2.mlstatic.com/D_NQ_NP_613918-MLA31189444193_062019-O.webp"
+              alt="[Imagen de Auriculares en oferta]"
+              class="w-full h-40 object-contain mb-2 rounded"
+              onerror="this.src='https://placehold.co/200x160/EFEFEF/AAAAAA?text=Producto+4'"
+            />
+            <h3 class="text-md font-semibold text-gray-800">
+              Controlcitos Crot
+            </h3>
+            <p class="text-xl font-bold text-green-600">$12.720</p>
+            <p class="text-xs text-green-500">Llega mañana</p>
+            <p class="text-xs text-green-500">Envío gratis</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow product-card">
+            <img
+              src="https://http2.mlstatic.com/D_637523-MLA72199154199_102023-C.jpg"
+              alt="[Imagen de Smartwatch en oferta]"
+              class="w-full h-40 object-contain mb-2 rounded"
+              onerror="this.src='https://placehold.co/200x160/EFEFEF/AAAAAA?text=Producto+5'"
+            />
+            <h3 class="text-md font-semibold text-gray-800">
+              40 Patys clasicas
+            </h3>
+            <p class="text-xl font-bold text-green-600">$47.311</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-8">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">Descubrí</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div
+            class="bg-white p-6 rounded-lg shadow flex items-center space-x-4 category-item"
+          >
+            <img
+              src="https://tn.com.ar/resizer/v2/celulares-y-notebooks-que-es-el-refurbished-y-por-que-sirve-para-ahorrar-energia-y-generar-menos-basura-foto-adobe-stock-HXDQKN6MZNAULOGFIMMSBEAGD4.jpg?auth=9c80cf7610014b66d2b22f426e1805e2544f80e0c43f72524bb5b9eca92d0d04"
+              alt="[Imagen de Categoría Tecnología]"
+              class="w-24 h-24 object-contain rounded"
+              onerror="this.src='https://placehold.co/96x96/EFEFEF/AAAAAA?text=Tecno'"
+            />
+            <div>
+              <h3 class="text-lg font-semibold text-gray-800">
+                Tecnología y Electrónica
+              </h3>
+              <p class="text-sm text-gray-600">
+                Lo último en gadgets y dispositivos.
+              </p>
+              <a href="#" class="text-sm meli-link font-semibold">Ver más</a>
+            </div>
+          </div>
+          <div
+            class="bg-white p-6 rounded-lg shadow flex items-center space-x-4 category-item"
+          >
+            <img
+              src="https://www.ciudad.com.ar/resizer/v2/look-oversize-cuanto-cuesta-el-conjunto-con-el-que-de-paul-llego-a-argentina-NZSNVJXQOZFAXATVBFRWYHIEGI.jpg?auth=6af34bf62fb4f98f683605df7fd52aac55f01a5d1135a6521b37e00a961b5f4e"
+              alt="[Imagen de Categoría Moda]"
+              class="w-24 h-24 object-contain rounded"
+              onerror="this.src='https://placehold.co/96x96/EFEFEF/AAAAAA?text=Moda'"
+            />
+            <div>
+              <h3 class="text-lg font-semibold text-gray-800">
+                Moda y Accesorios
+              </h3>
+              <p class="text-sm text-gray-600">
+                Renová tu look con las nuevas tendencias.
+              </p>
+              <a href="#" class="text-sm meli-link font-semibold">Ver más</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">
+          También te puede interesar
+        </h2>
+        <div
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+        >
+          <div class="bg-white p-4 rounded-lg shadow product-card">
+            <img
+              src="https://images.nicindustries.com/prismatic/projects/10545/powder-coated-harley-parts.jpg?1546468937"
+              alt="[Partes de Harley Davidson]"
+              class="w-full h-40 object-contain mb-2 rounded"
+              onerror="this.src='https://placehold.co/200x160/EFEFEF/AAAAAA?text=Producto+6'"
+            />
+            <h3 class="text-md font-semibold text-gray-800">
+              Kit Partes de Harley Davidson
+            </h3>
+            <p class="text-xl font-bold text-gray-800">$860.973</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow product-card">
+            <img
+              src="https://dbx1fvnryss68.cloudfront.net/ssr/images/3-Bz0ttA-d.webp?from-format=jpg"
+              alt="[Buzz Lightyear]"
+              class="w-full h-40 object-contain mb-2 rounded"
+              onerror="this.src='https://placehold.co/200x160/EFEFEF/AAAAAA?text=Producto+7'"
+            />
+            <h3 class="text-md font-semibold text-gray-800">
+              Disney's Buzz Lightyear - para reparar (right shoulder is stuck)
+            </h3>
+            <p class="text-xl font-bold text-gray-800">$287.666</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow product-card">
+            <img
+              src="https://www.hogarjardin.com.ar/wp-content/uploads/2024/08/Pan-Grama-Bahiana-1_1kx1k.jpg"
+              alt="[Grama Bahiana]"
+              class="w-full h-40 object-contain mb-2 rounded"
+              onerror="this.src='https://placehold.co/200x160/EFEFEF/AAAAAA?text=Producto+7'"
+            />
+            <h3 class="text-md font-semibold text-gray-800">
+              Pan de Cesped Grama Bahiana x metro cuadrado
+            </h3>
+            <p class="text-xl font-bold text-gray-800">$113.100</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow product-card">
+            <img
+              src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBw0NCxAICA0HBwcIDQ0ICAcHCA8IDQcNFREWFhURExMYHSggGBoxGxMTITEhMSkrLi4uFx8zODMsNygtLisBCgoKDg0NFg8PGSsdFR0rKzc3LS0rKy0rLSs3LSsrKy0rLSstKysrLSstLTcrKysrKysrKysrKysrKy0rKysrK//AABEIAOEA4QMBIgACEQEDEQH/xAAbAAEBAAMBAQEAAAAAAAAAAAAABQIDBAEGB//EABwQAQADAQEBAQEAAAAAAAAAAAACAwQBMUETIf/EABkBAQADAQEAAAAAAAAAAAAAAAABAgUEA//EABwRAQEAAgMBAQAAAAAAAAAAAAABAgMEETEhQf/aAAwDAQACEQMRAD8A/cB6AAAAAwl1z2ybp9cl8h6YRyaLE2+506po+q1aNLTr7Zz0ENKXbewjoW6ds0/H0VN6nnufLZ9CvlvRY5N2l9FVN0R6l57XdXNVm54dOkYx6yQ8QAAAAAAAAAHg9AAAAAAAabHDo67bHBoHvr9StkkPZNa1oezi8bHHiXfa5/2ZauOSXVo1cMZYp59H9Wceh8vTYrZLix4b9T63Lcq0WPmcdy1ltUsYm/X0s1ybOOWmbpj1Vn5TpkAKgAAAAAAAAAAAAAAANFnHFo477OOO/g9tdRtcUTZF9Bpij64LRrcfJ87rin2cWNcEq6K8bOq/GqEnfltTXRRNL02Y9x9JjtXMdr5XJYvYrFKyORrfS55u6uSPlsU6ZKsXbj1XUPOdeoc4AAAAAAAAAAAAAAADCfHLdF1y402xF8Kk6IJOutevgl6q0tDTm+b11pGiD6LXWj6q142tGaRPj2vrZbFq4s759illmuYrHzmeSzjmiuHkYPpslixnk+exzWc03nWFvwVYdZtFXW7iGfZ9egCAAAAAAAAAAAAAAHjCfGx53gmOG6KfprVrIuG+I6dWSBrrRddb6TVBF2VrRr8fN8/fByy4paYOCzi7X15dx7T1VyTSIKGWRVN2PcfSYpreWb5vHNcyTUrE5GK5TJ1R64M8nbDqrJ2T6zAHmAAAAAAAAAAAAAAPOvQGqfHHfF3y45buD1wqRpgja4PoNMUfXFMaejJ87qgm3RWtcEq+K8bWnJycdefrlk3UdS9853F3HJcySfO5JLmOStZHIxXs0lCrqVlkp09UYu2OgAc4AAAAAAAAAAAAAAADzrRbx0NNvBbH1O0cSdcVq/iVq4mO/RUDXFH08XtcUXVxaNrj1Omyp68s4V+rO/8AFXJJbxyQcvVrH1Ws3kRfyyVaOo2Tqtn6qw98dvHryL1DjAAAAAAAAAAAAAAAAGuxsYT8Exw38TNXFW7iZq4O3TUTXxF1cXdfPUXVxeNnj1Lt41w9bbfWuPqzSnjvzdWsfUTMs40Vw8iLuTqvn6jZOrGdSsPfHfDxkxh4yQ4aACAAAAAAAAAAAAAABjNkxkDkuTdPFO5N1Ds0+o2viLr+reviLr56vGzx0m71q563XetPPVmpj47cyzkRsyzkRXFyFvIsZkfIsZlKw97vrZsK/GaHBQAQAAAAAAAAAAAAAAMZMmMgctybpUrk3SOvT6j60XWt60TWvGzx0q73rT9b7vWj6s1MfHbmWciNmYcitcfIW8ivnSMivmVrD3qFfjNrrbEOC+gAgAAAAAAAAAAAAAAYyZMZhHLcm6VG5N0jr1epGtF1/VnWi6142uOmW+tH1ut9afqzTx8duZZyI2ZZxorj5C3kV86RkV86lYe/1QrZtdTYhwX0AEAAAAAAAAAAAAAADCbNrs6JjluTdXVC6SZqkOzTPqVr6i6++q2ySLqkvG1x4n2d/rV9Z2dae9WaWMd+bqzk6hZ5K+SaK5N8fQ5Oq+fqHjmsZpqVh74qVNjRTJu4hnZevQBAAAAAAAAAAAAAADHvWm2TbJz3dF8Z9cl8kvVN36ErUloacUzXJH0yVNSTo4tGzojhs60963WRauxWaGLfRJVyTSKoqWXhXPuj6DHNZzTQMizl6pWLyMVmiTqj1w5+uyCrKzn1tHj0eQAAAAAAAAAAAAADCTmtdMnPZwemDgv4maYq90U/RBLu1ZIWmCbfWuaK066paNXTmjzra/yUp0sPxWdk2OWqt35qyuh3Z6UV4bdnx05YK2aLkz1KNEFayt2fbtodkHLVx1wVZ2xs49ePR4gAAAAAPOPQAAAAAABhJomAvi57HDe9EuvWm6E+4Fmlqc0mHAS6p43QdtAIeOzxSod9IIZm312VuiAKuPNsegPIAAAAAB//2Q=="
+              alt="[Juguetito]"
+              class="w-full h-40 object-contain mb-2 rounded"
+              onerror="this.src='https://placehold.co/200x160/EFEFEF/AAAAAA?text=Producto+7'"
+            />
+            <h3 class="text-md font-semibold text-gray-800">
+              Juguete 3 Velocidades importado
+            </h3>
+            <p class="text-xl font-bold text-gray-800">$83.500</p>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow product-card">
+            <img
+              src="https://nextgames.com.ar/img/Public/1040/78475-producto-lego-76419-box.jpg"
+              alt="[Hogwarts Castle]"
+              class="w-full h-40 object-contain mb-2 rounded"
+              onerror="this.src='https://placehold.co/200x160/EFEFEF/AAAAAA?text=Producto+7'"
+            />
+            <h3 class="text-md font-semibold text-gray-800">
+              Lego - Hogwarts Castle
+            </h3>
+            <p class="text-xl font-bold text-gray-800">$1.223.128</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-10 py-8 text-center">
+      <div class="container mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-left px-4">
+          <div>
+            <h4 class="font-semibold mb-2 text-gray-700">Acerca de</h4>
+            <ul class="space-y-1">
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Mercado Libre</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Investor relations</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Tendencias</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-2 text-gray-700">Ayuda</h4>
+            <ul class="space-y-1">
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Comprar</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Vender</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Resolución de problemas</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-2 text-gray-700">Redes sociales</h4>
+            <div class="flex space-x-3">
+              <a href="#" class="text-gray-500 hover:text-meli-link"
+                ><i class="fab fa-twitter fa-lg"></i
+              ></a>
+              <a href="#" class="text-gray-500 hover:text-meli-link"
+                ><i class="fab fa-facebook-f fa-lg"></i
+              ></a>
+              <a href="#" class="text-gray-500 hover:text-meli-link"
+                ><i class="fab fa-instagram fa-lg"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400">
+          &copy; 1999-2025 MercadoLibre S.R.L.
+        </p>
+        <p class="text-xs text-gray-400">
+          Av. Caseros 3039, Piso 2, CP 1264, Parque Patricios, CABA
+        </p>
+      </div>
+    </footer>
+
+    <div id="ingresaModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button" id="closeModalButton">&times;</span>
+        <h2 class="text-xl font-semibold mb-4 text-gray-700">
+          Completa tus datos
+        </h2>
+
+        <label
+          for="usernameInput"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Nombre de Usuario:</label
+        >
+        <input
+          type="text"
+          id="usernameInput"
+          class="modal-input"
+          placeholder="Tu nombre de usuario"
+        />
+
+        <label
+          for="profilePicUrlInput"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >URL Foto de Perfil:</label
+        >
+        <div class="flex items-center">
+          <input
+            type="url"
+            id="profilePicUrlInput"
+            class="modal-input flex-grow"
+            placeholder="https://ejemplo.com/imagen.jpg"
+          />
+          <img
+            id="profilePicPreview"
+            src="https://placehold.co/50x50/EFEFEF/AAAAAA?text=?"
+            alt="Vista previa foto"
+            class="profile-pic-preview"
+          />
+        </div>
+
+        <hr class="my-6" />
+
+        <h3 class="text-lg font-semibold mb-3 text-gray-700">
+          Agregar Producto Imaginario
+        </h3>
+        <label
+          for="productTitleInput"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Título del Producto:</label
+        >
+        <input
+          type="text"
+          id="productTitleInput"
+          class="modal-input"
+          placeholder="Ej: Varita mágica de saúco"
+        />
+
+        <label
+          for="productImageUrlInput"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >URL Imagen del Producto:</label
+        >
+        <input
+          type="url"
+          id="productImageUrlInput"
+          class="modal-input"
+          placeholder="https://ejemplo.com/producto.jpg"
+        />
+
+        <div class="mt-6 flex justify-end">
+          <button id="addToCartButton" class="modal-button">
+            Agregar al Carrito
+          </button>
+          <button id="clearCartButton" class="modal-button delete">
+            Eliminar Lista
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="cartPage" class="hidden container mx-auto p-4">
+      <button
+        id="backToHomeButton"
+        class="mb-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg inline-flex items-center"
+      >
+        <i class="fas fa-arrow-left mr-2"></i> Volver a la página principal
+      </button>
+      <h1 class="text-3xl font-semibold text-gray-800 mb-6">Mi Carrito</h1>
+      <div id="cartItemsContainer" class="bg-white p-6 rounded-lg shadow">
+        <p id="emptyCartMessage" class="text-gray-500">
+          Tu carrito está vacío.
+        </p>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button
+          class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg text-lg"
+        >
+          Continuar compra (simulado)
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // --- Variables Globales ---
+      const ingresaLink = document.getElementById("ingresaLink");
+      const usernameDisplay = document.getElementById("usernameDisplay"); // Added for direct text manipulation
+      const navProfilePic = document.getElementById("navProfilePic");
+      const ingresaModal = document.getElementById("ingresaModal");
+      const closeModalButton = document.getElementById("closeModalButton");
+      const usernameInput = document.getElementById("usernameInput");
+      const profilePicUrlInput = document.getElementById("profilePicUrlInput");
+      const profilePicPreview = document.getElementById("profilePicPreview");
+
+      const productTitleInput = document.getElementById("productTitleInput");
+      const productImageUrlInput = document.getElementById(
+        "productImageUrlInput"
+      );
+      const addToCartButton = document.getElementById("addToCartButton");
+      const clearCartButton = document.getElementById("clearCartButton");
+
+      const cartLink = document.getElementById("cartLink");
+      const cartCount = document.getElementById("cartCount");
+
+      // Carousel elements
+      const carouselWrapper = document.getElementById("carouselWrapper");
+      const prevButton = document.getElementById("prevButton");
+      const nextButton = document.getElementById("nextButton");
+      let currentIndex = 0;
+      let carouselItems = []; // Will be populated on DOMContentLoaded
+
+      let cart = JSON.parse(localStorage.getItem("MercadoLibreCart")) || [];
+
+      // --- Funciones ---
+
+      // Función para abrir el modal
+      function openModal() {
+        // Populate modal inputs with current stored values
+        usernameInput.value =
+          localStorage.getItem("MercadoLibreUsername") || "";
+        profilePicUrlInput.value =
+          localStorage.getItem("MercadoLibreProfilePic") || "";
+        updateProfilePicPreview(); // Update preview when opening modal
+        ingresaModal.style.display = "block";
+      }
+
+      // Función para cerrar el modal
+      function closeModal() {
+        ingresaModal.style.display = "none";
+      }
+
+      // Función para actualizar el nombre de usuario en la barra de navegación
+      function updateUsernameDisplayAndNavPic() {
+        const username = usernameInput.value.trim();
+        const profilePicUrl = profilePicUrlInput.value.trim();
+
+        if (username) {
+          usernameDisplay.textContent = username;
+          localStorage.setItem("MercadoLibreUsername", username);
+        } else {
+          usernameDisplay.textContent = "Ingresa";
+          localStorage.removeItem("MercadoLibreUsername");
+        }
+
+        if (profilePicUrl) {
+          navProfilePic.src = profilePicUrl;
+          navProfilePic.classList.remove("hidden");
+          localStorage.setItem("MercadoLibreProfilePic", profilePicUrl);
+        } else {
+          navProfilePic.src = "https://placehold.co/30x30/EFEFEF/AAAAAA?text=?"; // Default placeholder
+          navProfilePic.classList.add("hidden");
+          localStorage.removeItem("MercadoLibreProfilePic");
+        }
+      }
+
+      // Función para actualizar la vista previa de la foto de perfil en el modal
+      function updateProfilePicPreview() {
+        const url = profilePicUrlInput.value.trim();
+        if (url) {
+          profilePicPreview.src = url;
+        } else {
+          profilePicPreview.src =
+            "https://placehold.co/50x50/EFEFEF/AAAAAA?text=?";
+        }
+      }
+
+      profilePicPreview.onerror = function () {
+        this.src = "https://placehold.co/50x50/EFEFEF/AAAAAA?text=Error";
+      };
+      navProfilePic.onerror = function () {
+        this.src = "https://placehold.co/30x30/EFEFEF/AAAAAA?text=X";
+        this.classList.remove("hidden"); // Ensure it's visible if there's an error but user tried to set it
+      };
+
+      // Función para agregar un producto al carrito
+      function addToCart() {
+        const title = productTitleInput.value.trim();
+        const imageUrl = productImageUrlInput.value.trim();
+
+        if (title && imageUrl) {
+          const price = (Math.random() * 10000 + 500).toFixed(2); // Precio aleatorio
+          const daysAgo = Math.floor(Math.random() * 2) + 1; // 1 or 2
+          const purchaseDate = new Date();
+          purchaseDate.setDate(purchaseDate.getDate() - daysAgo);
+          const options = { year: "numeric", month: "long", day: "numeric" };
+          const formattedDate = purchaseDate.toLocaleDateString(
+            "es-AR",
+            options
+          );
+
+          cart.push({
+            title,
+            imageUrl,
+            price: parseFloat(price),
+            purchaseDate: formattedDate,
+          });
+          localStorage.setItem("MercadoLibreCart", JSON.stringify(cart)); // Save to localStorage
+          updateCartCount();
+          productTitleInput.value = ""; // Limpiar campos
+          productImageUrlInput.value = "";
+          alert("Producto agregado al carrito!");
+          closeModal(); // Close modal after adding
+        } else {
+          alert(
+            "Por favor, completa el título y la URL de la imagen del producto."
+          );
+        }
+      }
+
+      // Función para limpiar el carrito
+      function clearCart() {
+        if (
+          confirm(
+            "¿Estás seguro de que quieres eliminar todos los productos del carrito?"
+          )
+        ) {
+          cart = [];
+          localStorage.removeItem("MercadoLibreCart");
+          updateCartCount();
+          alert("Carrito vaciado.");
+          closeModal(); // Close modal after clearing
+        }
+      }
+
+      // Función para actualizar la visualización del carrito (solo contador en index.html)
+      function updateCartCount() {
+        cartCount.textContent = cart.length;
+        if (cart.length > 0) {
+          cartCount.classList.remove("hidden");
+        } else {
+          cartCount.classList.add("hidden");
+        }
+      }
+
+      // Carousel Functions
+      function updateCarousel() {
+        carouselWrapper.style.transform = `translateX(-${
+          currentIndex * 100
+        }%)`;
+      }
+
+      function showNextSlide() {
+        currentIndex = (currentIndex + 1) % carouselItems.length;
+        updateCarousel();
+      }
+
+      function showPrevSlide() {
+        currentIndex =
+          (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+        updateCarousel();
+      }
+
+      // --- Event Listeners ---
+      ingresaLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        openModal();
+      });
+
+      closeModalButton.addEventListener("click", closeModal);
+
+      window.addEventListener("click", (event) => {
+        if (event.target === ingresaModal) {
+          closeModal();
+        }
+      });
+
+      usernameInput.addEventListener("input", updateUsernameDisplayAndNavPic);
+      profilePicUrlInput.addEventListener("input", updateProfilePicPreview); // Update preview as user types
+      profilePicUrlInput.addEventListener(
+        "change",
+        updateUsernameDisplayAndNavPic
+      ); // Update nav pic when URL is set
+
+      addToCartButton.addEventListener("click", addToCart);
+      clearCartButton.addEventListener("click", clearCart);
+
+      // Carousel event listeners
+      prevButton.addEventListener("click", showPrevSlide);
+      nextButton.addEventListener("click", showNextSlide);
+
+      // --- Inicialización ---
+      document.addEventListener("DOMContentLoaded", () => {
+        // Load profile and cart data on page load
+        const storedUsername = localStorage.getItem("MercadoLibreUsername");
+        const storedProfilePic = localStorage.getItem("MercadoLibreProfilePic");
+
+        if (storedUsername) {
+          usernameInput.value = storedUsername;
+        }
+        if (storedProfilePic) {
+          profilePicUrlInput.value = storedProfilePic;
+        }
+        // Call this after setting input values to display them
+        updateUsernameDisplayAndNavPic();
+        updateCartCount(); // Update cart count from loaded 'cart' array
+
+        // Initialize carousel items and show the first slide
+        carouselItems = Array.from(
+          document.querySelectorAll(".carousel-item")
+        );
+        updateCarousel();
+      });
+    </script>
+  </body>
+</html>

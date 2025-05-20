@@ -1,0 +1,33 @@
+{
+  "name": "melixsqv",
+  "version": "1.0.0",
+  "description": "Website maqueta para gag compras Miguele Meli",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatiMontenegro/MelixOlga.git"
+  },
+  "keywords": [
+    "Meli",
+    "Mercadolibre",
+    "Olga",
+    "Sone",
+    "que",
+    "volaba",
+    "gag",
+    "comedy",
+    "fake",
+    "ecommerce",
+    "ecommerce",
+    "commerce"
+  ],
+  "author": "Matias Montenegro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MatiMontenegro/MelixOlga/issues"
+  },
+  "homepage": "https://github.com/MatiMontenegro/MelixOlga#readme"
+}

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Carrito - MercadoLibre</title>
+    <link
+      rel="icon"
+      href="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.23.1/mercadolibre/favicon.ico"
+      type="image/x-icon"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <style>
+      /* START of copied styles from index.html */
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f5f5f5; /* Tono de gris claro similar a MercadoLibre */
+      }
+      .meli-yellow {
+        background-color: #ffdd00; /* Amarillo característico de MercadoLibre */
+      }
+      .meli-nav-text {
+        font-size: 0.8rem;
+        color: #333;
+      }
+      .meli-search-button {
+        background-color: #3483fa; /* Azul de MercadoLibre */
+        color: white;
+      }
+      .meli-search-input::placeholder {
+        color: #999;
+      }
+      .meli-link {
+        color: #3483fa;
+        text-decoration: none;
+      }
+      .meli-link:hover {
+        text-decoration: underline;
+      }
+      .category-item {
+        transition: transform 0.2s ease-in-out;
+      }
+      .category-item:hover {
+        transform: translateY(-3px);
+      }
+      .product-card {
+        transition: box-shadow 0.2s ease-in-out;
+      }
+      .product-card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Estilos para el panel modal */
+      .modal {
+        display: none; /* Oculto por defecto */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro semitransparente */
+      }
+      .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 25px;
+        border: 1px solid #ddd;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        position: relative; /* Para el botón de cerrar */
+      }
+      .close-button {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+      }
+      .close-button:hover,
+      .close-button:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .modal-input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .modal-button {
+        background-color: #3483fa;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-right: 10px;
+      }
+      .modal-button:hover {
+        background-color: #2968c8;
+      }
+      .modal-button.delete {
+        background-color: #dc3545;
+      }
+      .modal-button.delete:hover {
+        background-color: #c82333;
+      }
+      .profile-pic-preview {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-left: 10px;
+        border: 2px solid #eee;
+      }
+      .nav-profile-pic {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 8px;
+      }
+      /* END of copied styles from index.html */
+    </style>
+  </head>
+  <body class="bg-gray-100 flex flex-col min-h-screen">
+    <header class="meli-yellow p-2 shadow-md">
+      <div class="container mx-auto">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center">
+            <a href="index.html">
+              <img
+                src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.23.1/mercadolibre/logo__large_plus.png"
+                alt="Logo Mercado Libre"
+                class="h-8 md:h-10"
+              />
+            </a>
+          </div>
+
+          <div class="relative flex-grow max-w-xl mx-4 pl-20 hidden md:block">
+            <input
+              type="text"
+              id="searchBar"
+              placeholder="Buscar productos, marcas y más..."
+              class="w-full p-2 rounded-md border border-gray-300 meli-search-input text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <i
+              class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            ></i>
+          </div>
+
+          <img
+            src="https://http2.mlstatic.com/D_NQ_779354-MLA82788204133_022025-OO.webp"
+            alt="Disney+ Anuncio"
+            class="h-10 hidden md:block rounded-md"
+          />
+        </div>
+
+        <div class="flex items-start justify-between">
+          <div class="flex flex-col items-start min-w-[120px] md:min-w-[150px]">
+            <div class="hidden lg:flex items-center space-x-2 mb-2">
+              <i class="fas fa-map-marker-alt text-gray-600"></i>
+              <div>
+                <p class="text-xs text-gray-500">Enviar a</p>
+                <p class="text-sm font-semibold text-gray-700">
+                  153 W 57th St, New York
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <nav
+            class="flex-grow flex justify-center space-x-3 md:space-x-5 p-4 px-4"
+          >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Categorías</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Ofertas</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Cupones</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Supermercado</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Moda</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Mercado Play</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Vender</a
+            >
+            <a
+              href="#"
+              class="meli-nav-text hover:text-gray-800 hidden md:inline"
+              >Ayuda</a
+            >
+          </nav>
+
+          <div
+            class="flex items-center space-x-3 justify-end min-w-[150px] md:min-w-[200px]"
+          >
+            <a
+              href="index.html"
+              id="ingresaLink"
+              class="meli-nav-text font-semibold hover:text-gray-800 flex items-center"
+            >
+              <img
+                id="navProfilePic"
+                src="https://placehold.co/30x30/EFEFEF/AAAAAA?text=?"
+                alt="Foto de perfil"
+                class="nav-profile-pic hidden"
+              />
+              <span id="usernameDisplay">Ingresa</span>
+            </a>
+            <a
+              href="cart.html"
+              id="cartLink"
+              class="relative meli-nav-text hover:text-gray-800"
+            >
+              <i class="fas fa-shopping-cart text-xl"></i>
+              <span
+                id="cartCount"
+                class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
+                >0</span
+              >
+            </a>
+          </div>
+        </div>
+        <div class="container mx-auto mt-2 md:hidden">
+          <div class="relative flex-grow">
+            <input
+              type="text"
+              placeholder="Buscar productos, marcas y más..."
+              class="w-full p-2 pr-10 rounded-sm border border-gray-300 meli-search-input text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <i
+              class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            ></i>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="flex-grow container mx-auto p-4">
+      <button
+        id="backToHomeButton"
+        class="mb-4 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg inline-flex items-center"
+      >
+        <i class="fas fa-arrow-left mr-2"></i> Volver a la página principal
+      </button>
+      <h1 class="text-3xl font-semibold text-gray-800 mb-6">Mi Carrito</h1>
+      <div id="cartItemsContainer" class="bg-white p-6 rounded-lg shadow">
+        <p id="emptyCartMessage" class="text-gray-500 text-center py-8">
+          Tu carrito está vacío.
+        </p>
+      </div>
+      <div class="mt-6 flex justify-end">
+        <button
+          class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg text-lg"
+        >
+          Continuar compra (simulado)
+        </button>
+      </div>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-10 py-8 text-center">
+      <div class="container mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-left px-4">
+          <div>
+            <h4 class="font-semibold mb-2 text-gray-700">Acerca de</h4>
+            <ul class="space-y-1">
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Mercado Libre</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Investor relations</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Tendencias</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-2 text-gray-700">Ayuda</h4>
+            <ul class="space-y-1">
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Comprar</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Vender</a
+                >
+              </li>
+              <li>
+                <a href="#" class="text-sm text-gray-500 hover:text-meli-link"
+                  >Resolución de problemas</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-2 text-gray-700">Redes sociales</h4>
+            <div class="flex space-x-3">
+              <a href="#" class="text-gray-500 hover:text-meli-link"
+                ><i class="fab fa-twitter fa-lg"></i
+              ></a>
+              <a href="#" class="text-gray-500 hover:text-meli-link"
+                ><i class="fab fa-facebook-f fa-lg"></i
+              ></a>
+              <a href="#" class="text-gray-500 hover:text-meli-link"
+                ><i class="fab fa-instagram fa-lg"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400">&copy; 1999-2025 MercadoLibre S.R.L.</p>
+        <p class="text-xs text-gray-400">
+          Av. Caseros 3039, Piso 2, CP 1264, Parque Patricios, CABA
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // --- Variables Globales ---
+      const usernameDisplay = document.getElementById("usernameDisplay");
+      const navProfilePic = document.getElementById("navProfilePic");
+      const cartCount = document.getElementById("cartCount");
+      const cartItemsContainer = document.getElementById("cartItemsContainer");
+      const emptyCartMessage = document.getElementById("emptyCartMessage");
+      const backToHomeButton = document.getElementById("backToHomeButton");
+
+      let cart = [];
+
+      // --- Funciones ---
+
+      // Función para actualizar el nombre de usuario y la foto en la barra de navegación (copia de index.html)
+      function updateUsernameDisplayAndNavPic() {
+        const storedUsername = localStorage.getItem("MercadoLibreUsername");
+        const storedProfilePic = localStorage.getItem("MercadoLibreProfilePic");
+
+        if (storedUsername) {
+          usernameDisplay.textContent = storedUsername;
+        } else {
+          usernameDisplay.textContent = "Ingresa";
+        }
+
+        if (storedProfilePic) {
+          navProfilePic.src = storedProfilePic;
+          navProfilePic.classList.remove("hidden");
+        } else {
+          navProfilePic.src =
+            "https://placehold.co/30x30/EFEFEF/AAAAAA?text=?";
+          navProfilePic.classList.add("hidden");
+        }
+      }
+
+      // Error handling for profile pic loading
+      navProfilePic.onerror = function () {
+        this.src = "https://placehold.co/30x30/EFEFEF/AAAAAA?text=X";
+        this.classList.remove("hidden");
+      };
+
+      // Función para actualizar el contador del carrito
+      function updateCartCount() {
+        cartCount.textContent = cart.length;
+        if (cart.length > 0) {
+          cartCount.classList.remove("hidden");
+        } else {
+          cartCount.classList.add("hidden");
+        }
+      }
+
+      // Función para renderizar los items en la página del carrito
+      function renderCartItems() {
+        cartItemsContainer.innerHTML = ""; // Limpiar contenedor
+
+        if (cart.length === 0) {
+          cartItemsContainer.appendChild(emptyCartMessage);
+          emptyCartMessage.style.display = "block";
+        } else {
+          emptyCartMessage.style.display = "none";
+          cart.forEach((item, index) => {
+            const itemElement = document.createElement("div");
+            itemElement.classList.add(
+              "flex",
+              "items-center",
+              "justify-between",
+              "py-4",
+              "border-b",
+              "border-gray-200"
+            );
+            itemElement.innerHTML = `
+                        <div class="flex items-center space-x-4 flex-grow">
+                            <img src="${item.imageUrl}" alt="[Imagen de ${
+              item.title
+            }]" class="w-24 h-24 object-contain rounded border border-gray-300" onerror="this.src='https://placehold.co/96x96/EFEFEF/AAAAAA?text=Img'">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800">${
+                                  item.title
+                                }</h4>
+                                <p class="text-md text-gray-600">$${item.price.toFixed(
+                                  2
+                                )}</p>
+                                <p class="text-sm text-gray-500 mt-1">Comprado el: <span class="font-semibold">${
+                                  item.purchaseDate
+                                }</span></p>
+                            </div>
+                        </div>
+                        <button class="text-red-500 hover:text-red-700 removeItemButton" data-index="${index}">
+                            <i class="fas fa-trash-alt mr-1"></i> Eliminar
+                        </button>
+                    `;
+            cartItemsContainer.appendChild(itemElement);
+          });
+
+          // Añadir event listeners a los botones de eliminar item individual
+          document.querySelectorAll(".removeItemButton").forEach((button) => {
+            button.addEventListener("click", function () {
+              const itemIndex = parseInt(this.dataset.index);
+              removeItemFromCart(itemIndex);
+            });
+          });
+        }
+      }
+
+      // Función para eliminar un item individual del carrito
+      function removeItemFromCart(index) {
+        cart.splice(index, 1);
+        localStorage.setItem("MercadoLibreCart", JSON.stringify(cart)); // Update localStorage
+        updateCartCount();
+        renderCartItems(); // Re-render the cart items
+      }
+
+      // --- Event Listeners ---
+      backToHomeButton.addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+
+      // --- Inicialización ---
+      document.addEventListener("DOMContentLoaded", () => {
+        cart = JSON.parse(localStorage.getItem("MercadoLibreCart")) || []; // Load cart
+        updateUsernameDisplayAndNavPic(); // Load and display profile info in header
+        updateCartCount(); // Update cart count in header
+        renderCartItems(); // Display cart items on page load
+      });
+    </script>
+  </body>
+</html>
