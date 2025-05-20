@@ -2,7 +2,7 @@
   "name": "melixsqv",
   "version": "1.0.0",
   "description": "Website maqueta para gag compras Miguele Meli",
-  "main": "index.js",
+  "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
