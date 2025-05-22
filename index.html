@@ -913,6 +913,8 @@
       }
 
       // Carousel Functions
+      let autoSlideInterval; // Declare autoSlideInterval
+
       function updateCarousel() {
         carouselWrapper.style.transform = `translateX(-${
           currentIndex * 100
@@ -928,6 +930,15 @@
         currentIndex =
           (currentIndex - 1 + carouselItems.length) % carouselItems.length;
         updateCarousel();
+      }
+
+      function startAutoSlide() {
+        stopAutoSlide(); // Clear any existing interval to prevent multiple intervals
+        autoSlideInterval = setInterval(showNextSlide, 4000); // Change slide every 4 seconds
+      }
+
+      function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
       }
 
       // --- Event Listeners ---
@@ -955,8 +966,16 @@
       clearCartButton.addEventListener("click", clearCart);
 
       // Carousel event listeners
-      prevButton.addEventListener("click", showPrevSlide);
-      nextButton.addEventListener("click", showNextSlide);
+      prevButton.addEventListener("click", () => {
+        stopAutoSlide(); // Stop auto-slide on manual interaction
+        showPrevSlide();
+        setTimeout(startAutoSlide, 5000); // Restart auto-slide after 5 seconds
+      });
+      nextButton.addEventListener("click", () => {
+        stopAutoSlide(); // Stop auto-slide on manual interaction
+        showNextSlide();
+        setTimeout(startAutoSlide, 5000); // Restart auto-slide after 5 seconds
+      });
 
       // --- Inicialización ---
       document.addEventListener("DOMContentLoaded", () => {
@@ -979,6 +998,7 @@
           document.querySelectorAll(".carousel-item")
         );
         updateCarousel();
+        startAutoSlide(); // Start auto-slide when the page loads
       });
     </script>
   </body>
